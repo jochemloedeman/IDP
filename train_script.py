@@ -4,10 +4,8 @@ import pytorch_lightning as pl
 from pathlib import Path
 
 from pytorch_lightning import seed_everything
-
-from thesislib.models import CLIPIDP
-
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
+from thesislib.models import CLIPIDP
 from thesislib.datamodules import CIFAR100DataModule
 
 
@@ -99,13 +97,13 @@ if __name__ == '__main__':
     parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--idp_length', default=6, type=int)
-    parser.add_argument('--idp_mode', default='constant', type=str)
+    parser.add_argument('--idp_mode', default='hybrid', type=str)
     parser.add_argument('--idp_mixture_size', default=3, type=int)
     parser.add_argument('--optimizer', default='sgd', type=str)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
     parser.add_argument('--epochs', default=3, type=int)
     parser.add_argument('--strategy', default='ddp', type=str)
-    parser.add_argument('--num_workers', default=6, type=int)
+    parser.add_argument('--num_workers', default=0, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
     parser.add_argument('--dev_run', action=argparse.BooleanOptionalAction,
