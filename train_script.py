@@ -1,4 +1,5 @@
 import argparse
+import os.path
 import sys
 import pytorch_lightning as pl
 from pathlib import Path
@@ -47,12 +48,20 @@ def main(args):
     else:
         idp_settings = None
 
+    zeroshot_file = os.path.join(args.data_root,
+                                 args.dataset,
+                                 "zeroshot_classes.txt")
+
+    zeroshot_classes = [int(elem) for elem
+                        in open(zeroshot_file, 'r').read().splitlines()]
+
     clip_idp = CLIPIDP(
         clip_architecture=args.architecture,
         idp_settings=idp_settings,
         optimizer=args.optimizer,
         lr_scheduler=args.lr_scheduler,
         epochs=args.epochs,
+        unseen_classes=zeroshot_classes if args.scenario == 'zeroshot' else None
     )
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
@@ -97,13 +106,13 @@ if __name__ == '__main__':
     parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--idp_length', default=8, type=int)
-    parser.add_argument('--idp_mode', default='hybrid', type=str)
+    parser.add_argument('--idp_mode', default='constant', type=str)
     parser.add_argument('--idp_mixture_size', default=20, type=int)
     parser.add_argument('--optimizer', default='sgd', type=str)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
-    parser.add_argument('--epochs', default=1, type=int)
+    parser.add_argument('--epochs', default=2, type=int)
     parser.add_argument('--strategy', default='ddp', type=str)
-    parser.add_argument('--num_workers', default=2, type=int)
+    parser.add_argument('--num_workers', default=0, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
     parser.add_argument('--dev_run', action=argparse.BooleanOptionalAction,

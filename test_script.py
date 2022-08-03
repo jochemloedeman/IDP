@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 import pytorch_lightning as pl
 from pathlib import Path
@@ -29,6 +30,13 @@ text_embedding_dims = {
 def main(args):
     seed_everything(seed=args.seed, workers=True)
 
+    zeroshot_file = os.path.join(args.data_root,
+                                 args.dataset,
+                                 "zeroshot_classes.txt")
+
+    zeroshot_classes = [int(elem) for elem
+                        in open(zeroshot_file, 'r').read().splitlines()]
+
     datamodule = datamodules[args.dataset](
         data_root=args.data_root,
         train_batch_size=args.train_batch_size,
@@ -36,6 +44,8 @@ def main(args):
         num_workers=args.num_workers,
         scenario='regular'
     )
+
+
 
     if args.ckpt_file_name:
         clip_idp = CLIPIDP.load_from_checkpoint(
@@ -46,6 +56,8 @@ def main(args):
         clip_idp = CLIPIDP(
             clip_architecture=args.architecture,
             optimizer=args.optimizer,
+            unseen_classes=zeroshot_classes
+            if args.scenario == 'zeroshot' else None,
             idp_settings=None,
         )
         print("Loaded 0-shot CLIP\n")
@@ -64,13 +76,13 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--scenario', default='regular', type=str)
+    parser.add_argument('--scenario', default='zeroshot', type=str)
     parser.add_argument('--dataset', default='cifar100', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
     parser.add_argument('--ckpt_file_name',
-                        default="image.ckpt",
+                        default="",
                         type=str)
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
     parser.add_argument('--train_batch_size', default=32, type=int)
@@ -83,7 +95,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
     parser.add_argument('--epochs', default=3, type=int)
     parser.add_argument('--strategy', default='ddp', type=str)
-    parser.add_argument('--num_workers', default=4, type=int)
+    parser.add_argument('--num_workers', default=0, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
     parser.add_argument('--dev_run', action=argparse.BooleanOptionalAction,
