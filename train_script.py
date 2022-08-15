@@ -44,11 +44,13 @@ def main(args):
     if not args.disable_idp:
         idp_settings = {
             'idp_mode': args.idp_mode,
+            'idp_resolution': args.idp_resolution,
             'nr_output_vectors': args.idp_length,
             'vector_dim': visual_embedding_dims[args.architecture],
             'mixture_size': args.idp_mixture_size,
             'pretrained_idp': args.pretrained_idp,
-            'hybrid_idp_mode': args.hybrid_idp_mode
+            'hybrid_idp_mode': args.hybrid_idp_mode,
+            'model_type': args.idp_model_type
         }
     else:
         idp_settings = None
@@ -105,7 +107,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='sun397', type=str)
+    parser.add_argument('--dataset', default='food101', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -116,7 +118,9 @@ if __name__ == '__main__':
     parser.add_argument('--idp_length', default=8, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
     parser.add_argument('--idp_mixture_size', default=20, type=int)
-    parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
+    parser.add_argument('--idp_model_type', default='resnet', type=str)
+    parser.add_argument('--idp_resolution', default=64, type=int)
+    parser.add_argument('--hybrid_idp_mode', default='dedicated', type=str)
     parser.add_argument('--optimizer', default='sgd', type=str)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
     parser.add_argument('--epochs', default=2, type=int)
