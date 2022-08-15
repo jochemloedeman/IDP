@@ -1,17 +1,21 @@
 import argparse
 import os.path
 import sys
-import pytorch_lightning as pl
 from pathlib import Path
 
+import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
+
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
 from thesislib.models import CLIPIDP
-from thesislib.datamodules import CIFAR100DataModule
-
+from thesislib.datamodules import \
+    CIFAR100DataModule, DTDDataModule, SUN397DataModule, Food101DataModule
 
 datamodules = {
     'cifar100': CIFAR100DataModule,
+    'dtd': DTDDataModule,
+    'sun397': SUN397DataModule,
+    'food101': Food101DataModule,
 }
 
 visual_embedding_dims = {
@@ -44,16 +48,20 @@ def main(args):
             'vector_dim': visual_embedding_dims[args.architecture],
             'mixture_size': args.idp_mixture_size,
             'pretrained_idp': args.pretrained_idp,
+            'hybrid_idp_mode': args.hybrid_idp_mode
         }
     else:
         idp_settings = None
 
-    zeroshot_file = os.path.join(args.data_root,
-                                 args.dataset,
-                                 "zeroshot_classes.txt")
+    if args.scenario == 'zeroshot':
+        zeroshot_file = os.path.join(args.data_root,
+                                     args.dataset,
+                                     "zeroshot_classes.txt")
 
-    zeroshot_classes = [int(elem) for elem
-                        in open(zeroshot_file, 'r').read().splitlines()]
+        zeroshot_classes = [int(elem) for elem
+                            in open(zeroshot_file, 'r').read().splitlines()]
+    else:
+        zeroshot_classes = None
 
     clip_idp = CLIPIDP(
         clip_architecture=args.architecture,
@@ -61,7 +69,7 @@ def main(args):
         optimizer=args.optimizer,
         lr_scheduler=args.lr_scheduler,
         epochs=args.epochs,
-        unseen_classes=zeroshot_classes if args.scenario == 'zeroshot' else None
+        unseen_classes=zeroshot_classes
     )
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
@@ -96,18 +104,19 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--scenario', default='zeroshot', type=str)
-    parser.add_argument('--dataset', default='cifar100', type=str)
+    parser.add_argument('--scenario', default='regular', type=str)
+    parser.add_argument('--dataset', default='sun397', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
-    parser.add_argument('--train_batch_size', default=32, type=int)
-    parser.add_argument('--val_batch_size', default=32, type=int)
+    parser.add_argument('--train_batch_size', default=2, type=int)
+    parser.add_argument('--val_batch_size', default=2, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--idp_length', default=8, type=int)
-    parser.add_argument('--idp_mode', default='constant', type=str)
+    parser.add_argument('--idp_mode', default='hybrid', type=str)
     parser.add_argument('--idp_mixture_size', default=20, type=int)
+    parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
     parser.add_argument('--optimizer', default='sgd', type=str)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
     parser.add_argument('--epochs', default=2, type=int)
