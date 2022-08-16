@@ -69,6 +69,7 @@ def main(args):
         clip_architecture=args.architecture,
         idp_settings=idp_settings,
         optimizer=args.optimizer,
+        init_lr=args.init_lr,
         lr_scheduler=args.lr_scheduler,
         epochs=args.epochs,
         unseen_classes=zeroshot_classes
@@ -107,23 +108,24 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='food101', type=str)
+    parser.add_argument('--dataset', default='cifar100', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
-    parser.add_argument('--train_batch_size', default=2, type=int)
-    parser.add_argument('--val_batch_size', default=2, type=int)
+    parser.add_argument('--train_batch_size', default=32, type=int)
+    parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--idp_length', default=8, type=int)
-    parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=20, type=int)
-    parser.add_argument('--idp_model_type', default='resnet', type=str)
+    parser.add_argument('--idp_mode', default='constant', type=str)
+    parser.add_argument('--idp_mixture_size', default=24, type=int)
+    parser.add_argument('--idp_model_type', default='small', type=str)
     parser.add_argument('--idp_resolution', default=64, type=int)
-    parser.add_argument('--hybrid_idp_mode', default='dedicated', type=str)
+    parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
     parser.add_argument('--optimizer', default='sgd', type=str)
+    parser.add_argument('--init_lr', default=40, type=float)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
-    parser.add_argument('--epochs', default=2, type=int)
+    parser.add_argument('--epochs', default=3, type=int)
     parser.add_argument('--strategy', default='ddp', type=str)
     parser.add_argument('--num_workers', default=0, type=int)
     parser.add_argument('--seed', default=0, type=int)
