@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
-
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
 from thesislib.models import CLIPIDP
+
 from thesislib.datamodules import \
     CIFAR100DataModule, DTDDataModule, SUN397DataModule, Food101DataModule
 
@@ -50,7 +50,8 @@ def main(args):
             'mixture_size': args.idp_mixture_size,
             'pretrained_idp': args.pretrained_idp,
             'hybrid_idp_mode': args.hybrid_idp_mode,
-            'model_type': args.idp_model_type
+            'model_type': args.idp_model_type,
+            'mixture_temperature': args.mixture_temperature
         }
     else:
         idp_settings = None
@@ -108,7 +109,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='cifar100', type=str)
+    parser.add_argument('--dataset', default='dtd', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -117,11 +118,12 @@ if __name__ == '__main__':
     parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--idp_length', default=8, type=int)
-    parser.add_argument('--idp_mode', default='constant', type=str)
+    parser.add_argument('--idp_mode', default='hybrid', type=str)
     parser.add_argument('--idp_mixture_size', default=24, type=int)
     parser.add_argument('--idp_model_type', default='small', type=str)
     parser.add_argument('--idp_resolution', default=64, type=int)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
+    parser.add_argument('--mixture_temperature', default=1, type=float)
     parser.add_argument('--optimizer', default='sgd', type=str)
     parser.add_argument('--init_lr', default=40, type=float)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
