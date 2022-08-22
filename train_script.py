@@ -73,7 +73,6 @@ def main(args):
         init_lr=args.init_lr,
         lr_scheduler=args.lr_scheduler,
         epochs=args.epochs,
-        add_entropy_loss=args.add_entropy_loss,
         entropy_loss_coeff=args.entropy_loss_coeff,
         unseen_classes=zeroshot_classes
     )
@@ -121,7 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--idp_length', default=1, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=6, type=int)
+    parser.add_argument('--idp_mixture_size', default=8, type=int)
     parser.add_argument('--idp_model_type', default='small', type=str)
     parser.add_argument('--idp_resolution', default=64, type=int)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
@@ -132,11 +131,9 @@ if __name__ == '__main__':
     parser.add_argument('--entropy_loss_coeff', default=1, type=float)
     parser.add_argument('--epochs', default=2, type=int)
     parser.add_argument('--strategy', default=None, type=str)
-    parser.add_argument('--num_workers', default=0, type=int)
+    parser.add_argument('--num_workers', default=4, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
-    parser.add_argument('--add_entropy_loss', action=argparse.BooleanOptionalAction,
-                        default=False)
     parser.add_argument('--dev_run', action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--profiler', action=argparse.BooleanOptionalAction,
@@ -144,7 +141,7 @@ if __name__ == '__main__':
     parser.add_argument('--disable_idp', action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--pretrained_idp', action=argparse.BooleanOptionalAction,
-                        default=True)
+                        default=False)
 
     args = parser.parse_args()
 
