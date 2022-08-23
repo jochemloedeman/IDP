@@ -51,7 +51,7 @@ def main(args):
             'pretrained_idp': args.pretrained_idp,
             'hybrid_idp_mode': args.hybrid_idp_mode,
             'model_type': args.idp_model_type,
-            'mixture_temperature': args.mixture_temperature
+            'idp_act_fn': args.idp_act_fn,
         }
     else:
         idp_settings = None
@@ -110,7 +110,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='dtd', type=str)
+    parser.add_argument('--dataset', default='cifar100', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -123,16 +123,16 @@ if __name__ == '__main__':
     parser.add_argument('--idp_mixture_size', default=8, type=int)
     parser.add_argument('--idp_model_type', default='small', type=str)
     parser.add_argument('--idp_resolution', default=64, type=int)
+    parser.add_argument('--idp_act_fn', default='softmax', type=str)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
-    parser.add_argument('--mixture_temperature', default=1, type=float)
     parser.add_argument('--optimizer', default='sgd', type=str)
     parser.add_argument('--init_lr', default=0.1, type=float)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
-    parser.add_argument('--entropy_loss_coeff', default=1, type=float)
-    parser.add_argument('--epochs', default=2, type=int)
+    parser.add_argument('--entropy_loss_coeff', default=0.1, type=float)
+    parser.add_argument('--epochs', default=5, type=int)
     parser.add_argument('--strategy', default=None, type=str)
     parser.add_argument('--num_workers', default=4, type=int)
-    parser.add_argument('--seed', default=0, type=int)
+    parser.add_argument('--seed', default=1, type=int)
 
     parser.add_argument('--dev_run', action=argparse.BooleanOptionalAction,
                         default=False)
