@@ -72,6 +72,7 @@ def main(args):
         optimizer=args.optimizer,
         init_lr=args.init_lr,
         lr_scheduler=args.lr_scheduler,
+        warmup_epochs=args.warmup_epochs,
         epochs=args.epochs,
         entropy_loss_coeff=args.entropy_loss_coeff,
         unseen_classes=zeroshot_classes
@@ -109,15 +110,22 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+
+    # Dataset
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='cifar100', type=str)
+    parser.add_argument('--dataset', default='dtd', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
+
+    # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
     parser.add_argument('--train_batch_size', default=64, type=int)
     parser.add_argument('--val_batch_size', default=64, type=int)
     parser.add_argument('--precision', default=32, type=int)
+    parser.add_argument('--entropy_loss_coeff', default=1, type=float)
+
+    # IDP
     parser.add_argument('--idp_length', default=1, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
     parser.add_argument('--idp_mixture_size', default=8, type=int)
@@ -125,15 +133,20 @@ if __name__ == '__main__':
     parser.add_argument('--idp_resolution', default=64, type=int)
     parser.add_argument('--idp_act_fn', default='softmax', type=str)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
+
+    # Optimizer
     parser.add_argument('--optimizer', default='sgd', type=str)
     parser.add_argument('--init_lr', default=0.1, type=float)
     parser.add_argument('--lr_scheduler', default='cosine', type=str)
-    parser.add_argument('--entropy_loss_coeff', default=0.1, type=float)
-    parser.add_argument('--epochs', default=5, type=int)
+    parser.add_argument('--warmup_epochs', default=10, type=int)
+
+    # Experiment
+    parser.add_argument('--epochs', default=10, type=int)
     parser.add_argument('--strategy', default=None, type=str)
     parser.add_argument('--num_workers', default=4, type=int)
-    parser.add_argument('--seed', default=1, type=int)
+    parser.add_argument('--seed', default=0, type=int)
 
+    # Switches
     parser.add_argument('--dev_run', action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--profiler', action=argparse.BooleanOptionalAction,
