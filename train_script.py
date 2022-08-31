@@ -39,7 +39,10 @@ def main(args):
         test_batch_size=args.val_batch_size,
         num_workers=args.num_workers,
         scenario=args.scenario,
-        scale_lower_bound=args.rrc_scale_lb
+        scale_lower_bound=args.rrc_scale_lb,
+        jitter_prob=args.jitter_prob,
+        greyscale_prob=args.greyscale_prob,
+        solarize_prob=args.solarize_prob,
     )
 
     if not args.disable_idp:
@@ -122,6 +125,9 @@ if __name__ == '__main__':
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
     parser.add_argument('--rrc_scale_lb', default=0.9, type=float)
+    parser.add_argument('--jitter_prob', default=0.8, type=float)
+    parser.add_argument('--greyscale_prob', default=0.2, type=float)
+    parser.add_argument('--solarize_prob', default=0.2, type=float)
 
     # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
@@ -131,9 +137,9 @@ if __name__ == '__main__':
     parser.add_argument('--entropy_loss_coeff', default=0, type=float)
 
     # IDP
-    parser.add_argument('--idp_length', default=2, type=int)
+    parser.add_argument('--idp_length', default=4, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=16, type=int)
+    parser.add_argument('--idp_mixture_size', default=32, type=int)
     parser.add_argument('--idp_act_fn', default='softmax', type=str)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
 
