@@ -38,7 +38,8 @@ def main(args):
         train_batch_size=args.train_batch_size,
         test_batch_size=args.val_batch_size,
         num_workers=args.num_workers,
-        scenario=args.scenario
+        scenario=args.scenario,
+        scale_lower_bound=args.rrc_scale_lb
     )
 
     if not args.disable_idp:
@@ -116,28 +117,29 @@ if __name__ == '__main__':
 
     # Dataset
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='dtd', type=str)
+    parser.add_argument('--dataset', default='cifar100', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
+    parser.add_argument('--rrc_scale_lb', default=0.9, type=float)
 
     # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
-    parser.add_argument('--train_batch_size', default=64, type=int)
-    parser.add_argument('--val_batch_size', default=64, type=int)
+    parser.add_argument('--train_batch_size', default=32, type=int)
+    parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--entropy_loss_coeff', default=0, type=float)
 
     # IDP
     parser.add_argument('--idp_length', default=2, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=4, type=int)
+    parser.add_argument('--idp_mixture_size', default=16, type=int)
     parser.add_argument('--idp_act_fn', default='softmax', type=str)
-    parser.add_argument('--hybrid_idp_mode', default='dedicated', type=str)
+    parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
 
     # IDP Model
     parser.add_argument('--idp_model_type', default='small', type=str)
-    parser.add_argument('--idp_resolution', default=128, type=int)
+    parser.add_argument('--idp_resolution', default=64, type=int)
     parser.add_argument('--nr_groups', default=4, type=int)
     parser.add_argument('--blocks_per_group', default=1, type=int)
     parser.add_argument('--initial_channels', default=16, type=int)
@@ -148,8 +150,8 @@ if __name__ == '__main__':
     parser.add_argument('--lr_scheduler', default='warmup', type=str)
 
     # Experiment
-    parser.add_argument('--epochs', default=10, type=int)
-    parser.add_argument('--warmup_epochs', default=5, type=int)
+    parser.add_argument('--epochs', default=100, type=int)
+    parser.add_argument('--warmup_epochs', default=50, type=int)
     parser.add_argument('--strategy', default=None, type=str)
     parser.add_argument('--num_workers', default=4, type=int)
     parser.add_argument('--seed', default=0, type=int)
