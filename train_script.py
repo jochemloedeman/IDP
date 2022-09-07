@@ -60,6 +60,7 @@ def main(args):
             'nr_groups': args.nr_groups,
             'blocks_per_group': args.blocks_per_group,
             'initial_channels': args.initial_channels,
+
         }
     else:
         idp_settings = None
@@ -83,7 +84,8 @@ def main(args):
         warmup_epochs=args.warmup_epochs,
         epochs=args.epochs,
         entropy_loss_coeff=args.entropy_loss_coeff,
-        unseen_classes=zeroshot_classes
+        unseen_classes=zeroshot_classes,
+        disable_loggers=args.disable_loggers
     )
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
@@ -132,15 +134,15 @@ if __name__ == '__main__':
 
     # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
-    parser.add_argument('--train_batch_size', default=64, type=int)
-    parser.add_argument('--val_batch_size', default=64, type=int)
+    parser.add_argument('--train_batch_size', default=32, type=int)
+    parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--entropy_loss_coeff', default=0, type=float)
 
     # IDP
-    parser.add_argument('--idp_length', default=4, type=int)
+    parser.add_argument('--idp_length', default=8, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=32, type=int)
+    parser.add_argument('--idp_mixture_size', default=1024, type=int)
     parser.add_argument('--idp_act_fn', default='softmax', type=str)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
 
@@ -173,6 +175,9 @@ if __name__ == '__main__':
     parser.add_argument('--disable_idp', action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--pretrained_idp', action=argparse.BooleanOptionalAction,
+                        default=False)
+    parser.add_argument('--disable_loggers',
+                        action=argparse.BooleanOptionalAction,
                         default=False)
 
     args = parser.parse_args()
