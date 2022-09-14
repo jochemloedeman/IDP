@@ -60,6 +60,7 @@ def main(args):
             'nr_groups': args.nr_groups,
             'blocks_per_group': args.blocks_per_group,
             'initial_channels': args.initial_channels,
+            'init_max_pool': args.init_max_pool
 
         }
     else:
@@ -134,25 +135,27 @@ if __name__ == '__main__':
 
     # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
-    parser.add_argument('--train_batch_size', default=32, type=int)
-    parser.add_argument('--val_batch_size', default=32, type=int)
+    parser.add_argument('--train_batch_size', default=8, type=int)
+    parser.add_argument('--val_batch_size', default=8, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--entropy_loss_coeff', default=0, type=float)
 
     # IDP
     parser.add_argument('--idp_length', default=8, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=1024, type=int)
+    parser.add_argument('--idp_mixture_size', default=64, type=int)
     parser.add_argument('--idp_act_fn', default='softmax', type=str)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
 
     # IDP Model
     parser.add_argument('--idp_model_type', default='small', type=str)
     parser.add_argument('--idp_proj_type', default='linear', type=str)
-    parser.add_argument('--idp_resolution', default=64, type=int)
+    parser.add_argument('--idp_resolution', default=224, type=int)
     parser.add_argument('--nr_groups', default=4, type=int)
     parser.add_argument('--blocks_per_group', default=1, type=int)
-    parser.add_argument('--initial_channels', default=16, type=int)
+    parser.add_argument('--initial_channels', default=32, type=int)
+    parser.add_argument('--init_max_pool', action=argparse.BooleanOptionalAction,
+                        default=False)
 
 
     # Optimizer
@@ -164,7 +167,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--warmup_epochs', default=50, type=int)
     parser.add_argument('--strategy', default=None, type=str)
-    parser.add_argument('--num_workers', default=4, type=int)
+    parser.add_argument('--num_workers', default=0, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
     # Switches
