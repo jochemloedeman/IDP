@@ -1,5 +1,4 @@
 import argparse
-import gc
 import sys
 from pathlib import Path
 
@@ -7,13 +6,9 @@ import torch.nn
 from pytorch_lightning import seed_everything
 from torchray.utils import get_device
 
-from thesislib.attribution.generate import generate_perturbation_mask, \
-    generate_gradcam_map, generate_item_specific_attributions, \
-    generate_image_specific_attributions, create_image_grid, \
-    find_top_dict_items, create_image_grids
-from thesislib.components.idp import HybridSharedIDP
-
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
+from thesislib.attribution.generate import generate_item_specific_attributions, \
+    find_top_dict_items, create_image_grids
 from thesislib.models import CLIPIDP
 from thesislib.datamodules import CIFAR100DataModule, DTDDataModule, \
     SUN397DataModule, Food101DataModule
@@ -117,7 +112,8 @@ if __name__ == '__main__':
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
 
-    parser.add_argument('--ckpt_file_name', default="8x64_cifar100_resnet10.ckpt",
+    parser.add_argument('--ckpt_file_name',
+                        default="8x64_cifar100_resnet10.ckpt",
                         type=str)
     parser.add_argument('--rrc_scale_lb', default=0.875, type=float)
     parser.add_argument('--jitter_prob', default=0.0, type=float)
@@ -128,9 +124,6 @@ if __name__ == '__main__':
     parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--num_workers', default=4, type=int)
 
-    parser.add_argument('--token_idx', default=2, type=int)
-    parser.add_argument('--dict_idx', default=3, type=int)
-    parser.add_argument('--image_idx', default=0, type=int)
     parser.add_argument('--nr_rows_cols', default=4, type=int)
     parser.add_argument('--attr_method', default='perturbation', type=str)
     parser.add_argument('--attr_vis_mode', default='item_specific', type=str)
