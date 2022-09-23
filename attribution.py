@@ -36,6 +36,7 @@ def main(args):
     seed_everything(seed=args.seed, workers=True)
 
     device = get_device()
+    print(device)
 
     datamodule = datamodules[args.dataset](
         data_root=args.data_root,
