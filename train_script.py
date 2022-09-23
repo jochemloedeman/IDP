@@ -49,7 +49,6 @@ def main(args):
         train_batch_size=args.train_batch_size,
         test_batch_size=args.val_batch_size,
         num_workers=args.num_workers,
-        scenario=args.scenario,
         scale_lower_bound=args.rrc_scale_lb,
         jitter_prob=args.jitter_prob,
         greyscale_prob=args.greyscale_prob,
@@ -77,16 +76,6 @@ def main(args):
     else:
         idp_settings = None
 
-    if args.scenario == 'zeroshot':
-        zeroshot_file = os.path.join(args.data_root,
-                                     args.dataset,
-                                     "zeroshot_classes.txt")
-
-        zeroshot_classes = [int(elem) for elem
-                            in open(zeroshot_file, 'r').read().splitlines()]
-    else:
-        zeroshot_classes = None
-
     clip_idp = CLIPIDP(
         clip_architecture=args.architecture,
         idp_settings=idp_settings,
@@ -96,7 +85,6 @@ def main(args):
         warmup_epochs=args.warmup_epochs,
         epochs=args.epochs,
         entropy_loss_coeff=args.entropy_loss_coeff,
-        unseen_classes=zeroshot_classes,
         disable_loggers=args.disable_loggers
     )
 
@@ -134,8 +122,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='food101', type=str)
+    parser.add_argument('--dataset', default='ucf101', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -159,7 +146,7 @@ if __name__ == '__main__':
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
 
     # IDP Model
-    parser.add_argument('--idp_model_type', default='resnet10', type=str)
+    parser.add_argument('--idp_model_type', default='small', type=str)
     parser.add_argument('--idp_proj_type', default='linear', type=str)
     parser.add_argument('--idp_resolution', default=224, type=int)
     parser.add_argument('--nr_groups', default=4, type=int)
@@ -167,7 +154,6 @@ if __name__ == '__main__':
     parser.add_argument('--initial_channels', default=16, type=int)
     parser.add_argument('--init_max_pool', action=argparse.BooleanOptionalAction,
                         default=True)
-
 
     # Optimizer
     parser.add_argument('--optimizer', default='sgd', type=str)
