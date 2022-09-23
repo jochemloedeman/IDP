@@ -1,4 +1,5 @@
 import argparse
+import gc
 import sys
 from pathlib import Path
 
@@ -8,7 +9,8 @@ from torchray.utils import get_device
 
 from thesislib.attribution.generate import generate_perturbation_mask, \
     generate_gradcam_map, generate_item_specific_attributions, \
-    generate_image_specific_attributions
+    generate_image_specific_attributions, create_image_grid, \
+    find_top_dict_items, create_image_grids
 from thesislib.components.idp import HybridSharedIDP
 
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
@@ -53,38 +55,37 @@ def main(args):
     )
     datamodule.setup(stage='test')
 
-    if args.ckpt_file_name:
-        clip_idp = CLIPIDP.load_from_checkpoint(
-            Path(__file__).parent / 'checkpoints' / args.ckpt_file_name
-        )
-        print(f"loaded {args.ckpt_file_name}\n")
-        idp_module = wrap_lightning_module(clip_idp.input_dependent_prompt,
-                                       args.token_idx)
-    else:
-        idp_module = HybridSharedIDP
-    idp_module.to(device)
-    test_set = datamodule.test_set
+    clip_idp = CLIPIDP.load_from_checkpoint(
+        Path(__file__).parent / 'checkpoints' / args.ckpt_file_name
+    )
+    print(f"loaded {args.ckpt_file_name}\n")
 
-    if args.attr_vis_mode == 'item_specific':
-        generate_item_specific_attributions(
-            test_set,
-            device,
-            args.attr_method,
-            idp_module,
-            args.dict_idx,
-            args.nr_rows_cols,
-            args.disable_mask,
-        )
-    elif args.attr_vis_mode == 'image_specific':
-        generate_image_specific_attributions(
-            test_set,
-            device,
-            args.attr_method,
-            idp_module,
-            args.image_idx,
-            args.nr_rows_cols,
-            args.disable_mask,
-        )
+    test_set = datamodule.test_set
+    for token_index in range(8):
+        idp_module = wrap_lightning_module(clip_idp.input_dependent_prompt,
+                                           token_index)
+        idp_module.to(device)
+        idp_module.eval()
+        dict_items = find_top_dict_items(idp_module, test_set, device)
+        dict_items = dict_items.cpu().tolist()
+        for dict_item in dict_items[:2]:
+            images = generate_item_specific_attributions(
+                test_set,
+                device,
+                args.attr_method,
+                idp_module,
+                dict_item,
+                args.nr_rows_cols,
+                args.disable_mask,
+            )
+
+            create_image_grids(images,
+                               args.nr_rows_cols,
+                               args.dataset,
+                               args.ckpt_file_name,
+                               token_index,
+                               dict_item)
+        torch.cuda.empty_cache()
 
 
 def wrap_lightning_module(lightning_module, token_idx):
@@ -92,11 +93,16 @@ def wrap_lightning_module(lightning_module, token_idx):
         def __init__(self, idp_module, token_idx):
             super().__init__()
             self.idp_module = idp_module
+            self.idp_module.log = False
             self.token_idx = token_idx
 
         def forward(self, x):
             idps, mixture_logits = self.idp_module(x)
-            return mixture_logits[:, self.token_idx]
+            token_logits = mixture_logits[:, self.token_idx]
+            del idps
+            del mixture_logits
+            torch.cuda.empty_cache()
+            return token_logits
 
     return ModuleWrapper(lightning_module, token_idx)
 
@@ -106,12 +112,13 @@ if __name__ == '__main__':
 
     # Dataset
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='sun397', type=str)
+    parser.add_argument('--dataset', default='cifar100', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
 
-    parser.add_argument('--ckpt_file_name', default="8x8_sun397.ckpt", type=str)
+    parser.add_argument('--ckpt_file_name', default="8x64_cifar100_resnet10.ckpt",
+                        type=str)
     parser.add_argument('--rrc_scale_lb', default=0.875, type=float)
     parser.add_argument('--jitter_prob', default=0.0, type=float)
     parser.add_argument('--greyscale_prob', default=0.0, type=float)
@@ -121,11 +128,11 @@ if __name__ == '__main__':
     parser.add_argument('--val_batch_size', default=32, type=int)
     parser.add_argument('--num_workers', default=4, type=int)
 
-    parser.add_argument('--token_idx', default=0, type=int)
-    parser.add_argument('--dict_idx', default=5, type=int)
+    parser.add_argument('--token_idx', default=2, type=int)
+    parser.add_argument('--dict_idx', default=3, type=int)
     parser.add_argument('--image_idx', default=0, type=int)
-    parser.add_argument('--nr_rows_cols', default=3, type=int)
-    parser.add_argument('--attr_method', default='grad-cam', type=str)
+    parser.add_argument('--nr_rows_cols', default=4, type=int)
+    parser.add_argument('--attr_method', default='perturbation', type=str)
     parser.add_argument('--attr_vis_mode', default='item_specific', type=str)
     parser.add_argument('--disable_mask',
                         action=argparse.BooleanOptionalAction,
