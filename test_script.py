@@ -8,7 +8,7 @@ from pytorch_lightning import seed_everything
 
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
 from thesislib.models import CLIPIDP
-
+from thesislib.datamodules.super_datamodule import SuperDataModule
 from thesislib.datamodules import \
     CIFAR100DataModule, DTDDataModule, SUN397DataModule, Food101DataModule, \
     Flowers102DataModule, EuroSATDataModule, UCF101DataModule, \
@@ -28,6 +28,7 @@ datamodules = {
     'svhn': SVHNDataModule,
     'resisc45': RESISC45DataModule,
     'clevr_count': CLEVRCountDataModule,
+    'super': SuperDataModule,
 }
 
 visual_embedding_dims = {

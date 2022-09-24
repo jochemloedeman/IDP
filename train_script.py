@@ -5,7 +5,9 @@ from pathlib import Path
 
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
+
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
+from thesislib.datamodules.super_datamodule import SuperDataModule
 from thesislib.models import CLIPIDP
 
 from thesislib.datamodules import \
@@ -27,6 +29,7 @@ datamodules = {
     'svhn': SVHNDataModule,
     'resisc45': RESISC45DataModule,
     'clevr_count': CLEVRCountDataModule,
+    'super': SuperDataModule,
 }
 
 visual_embedding_dims = {
@@ -122,14 +125,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument('--dataset', default='ucf101', type=str)
+    parser.add_argument('--dataset', default='super', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
-    parser.add_argument('--rrc_scale_lb', default=0.875, type=float)
-    parser.add_argument('--jitter_prob', default=0.0, type=float)
-    parser.add_argument('--greyscale_prob', default=0.0, type=float)
-    parser.add_argument('--solarize_prob', default=0.0, type=float)
+    parser.add_argument('--rrc_scale_lb', default=1., type=float)
+    parser.add_argument('--jitter_prob', default=0.8, type=float)
+    parser.add_argument('--greyscale_prob', default=0.2, type=float)
+    parser.add_argument('--solarize_prob', default=0.2, type=float)
 
     # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
