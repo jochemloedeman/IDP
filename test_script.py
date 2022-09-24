@@ -13,7 +13,7 @@ from thesislib.datamodules import \
     CIFAR100DataModule, DTDDataModule, SUN397DataModule, Food101DataModule, \
     Flowers102DataModule, EuroSATDataModule, UCF101DataModule, \
     OxfordPetsDataModule, CIFAR10DataModule, SVHNDataModule, RESISC45DataModule, \
-    CLEVRCountDataModule
+    CLEVRCountDataModule, MegaDataModule
 
 datamodules = {
     'cifar10': CIFAR10DataModule,
@@ -29,6 +29,7 @@ datamodules = {
     'resisc45': RESISC45DataModule,
     'clevr_count': CLEVRCountDataModule,
     'super': SuperDataModule,
+    'mega': MegaDataModule,
 }
 
 visual_embedding_dims = {
@@ -93,7 +94,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument('--dataset', default='clevr_count', type=str)
+    parser.add_argument('--dataset', default='mega', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)

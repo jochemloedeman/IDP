@@ -14,7 +14,7 @@ from thesislib.datamodules import \
     CIFAR100DataModule, DTDDataModule, SUN397DataModule, Food101DataModule, \
     Flowers102DataModule, EuroSATDataModule, UCF101DataModule, \
     OxfordPetsDataModule, CIFAR10DataModule, SVHNDataModule, RESISC45DataModule, \
-    CLEVRCountDataModule
+    CLEVRCountDataModule, MegaDataModule
 
 datamodules = {
     'cifar10': CIFAR10DataModule,
@@ -30,6 +30,7 @@ datamodules = {
     'resisc45': RESISC45DataModule,
     'clevr_count': CLEVRCountDataModule,
     'super': SuperDataModule,
+    'mega': MegaDataModule,
 }
 
 visual_embedding_dims = {
@@ -125,7 +126,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument('--dataset', default='super', type=str)
+    parser.add_argument('--dataset', default='mega', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -136,8 +137,8 @@ if __name__ == '__main__':
 
     # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
-    parser.add_argument('--train_batch_size', default=32, type=int)
-    parser.add_argument('--val_batch_size', default=32, type=int)
+    parser.add_argument('--train_batch_size', default=2, type=int)
+    parser.add_argument('--val_batch_size', default=2, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--entropy_loss_coeff', default=0, type=float)
 
@@ -167,7 +168,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--warmup_epochs', default=50, type=int)
     parser.add_argument('--strategy', default=None, type=str)
-    parser.add_argument('--num_workers', default=4, type=int)
+    parser.add_argument('--num_workers', default=0, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
     # Switches
