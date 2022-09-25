@@ -6,18 +6,32 @@ import torch.nn
 from pytorch_lightning import seed_everything
 from torchray.utils import get_device
 
+
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
 from thesislib.attribution.generate import generate_item_specific_attributions, \
     find_top_dict_items, create_image_grids
 from thesislib.models import CLIPIDP
-from thesislib.datamodules import CIFAR100DataModule, DTDDataModule, \
-    SUN397DataModule, Food101DataModule
+from thesislib.datamodules import \
+    CIFAR100DataModule, DTDDataModule, SUN397DataModule, Food101DataModule, \
+    Flowers102DataModule, EuroSATDataModule, UCF101DataModule, \
+    OxfordPetsDataModule, CIFAR10DataModule, SVHNDataModule, RESISC45DataModule, \
+    CLEVRCountDataModule, MegaDataModule, SuperDataModule
 
 datamodules = {
+    'cifar10': CIFAR10DataModule,
     'cifar100': CIFAR100DataModule,
     'dtd': DTDDataModule,
     'sun397': SUN397DataModule,
     'food101': Food101DataModule,
+    'flowers102': Flowers102DataModule,
+    'eurosat': EuroSATDataModule,
+    'ucf101': UCF101DataModule,
+    'oxford_pets': OxfordPetsDataModule,
+    'svhn': SVHNDataModule,
+    'resisc45': RESISC45DataModule,
+    'clevr_count': CLEVRCountDataModule,
+    'super': SuperDataModule,
+    'mega': MegaDataModule,
 }
 
 visual_embedding_dims = {
@@ -64,7 +78,7 @@ def main(args):
         idp_module.eval()
         dict_items = find_top_dict_items(idp_module, test_set, device)
         dict_items = dict_items.cpu().tolist()
-        for dict_item in dict_items[:2]:
+        for dict_item in dict_items[:3]:
             images = generate_item_specific_attributions(
                 test_set,
                 device,
@@ -108,13 +122,13 @@ if __name__ == '__main__':
 
     # Dataset
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='cifar100', type=str)
+    parser.add_argument('--dataset', default='ucf101', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
 
     parser.add_argument('--ckpt_file_name',
-                        default="8x64_cifar100_resnet10.ckpt",
+                        default="16x128_ucf101.ckpt",
                         type=str)
     parser.add_argument('--rrc_scale_lb', default=0.875, type=float)
     parser.add_argument('--jitter_prob', default=0.0, type=float)
