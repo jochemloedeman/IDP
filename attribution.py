@@ -71,7 +71,7 @@ def main(args):
     print(f"loaded {args.ckpt_file_name}\n")
 
     test_set = datamodule.test_set
-    for token_index in range(8):
+    for token_index in range(args.nr_tokens):
         idp_module = wrap_lightning_module(clip_idp.input_dependent_prompt,
                                            token_index)
         idp_module.to(device)
@@ -140,6 +140,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', default=4, type=int)
 
     parser.add_argument('--nr_rows_cols', default=4, type=int)
+    parser.add_argument('--nr_tokens', default=16, type=int)
     parser.add_argument('--attr_method', default='perturbation', type=str)
     parser.add_argument('--attr_vis_mode', default='item_specific', type=str)
     parser.add_argument('--disable_mask',
