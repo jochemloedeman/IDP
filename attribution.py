@@ -122,13 +122,13 @@ if __name__ == '__main__':
 
     # Dataset
     parser.add_argument('--scenario', default='regular', type=str)
-    parser.add_argument('--dataset', default='ucf101', type=str)
+    parser.add_argument('--dataset', default='cifar100', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
 
     parser.add_argument('--ckpt_file_name',
-                        default="16x128_ucf101.ckpt",
+                        default="16x128_cifar100.ckpt",
                         type=str)
     parser.add_argument('--rrc_scale_lb', default=0.875, type=float)
     parser.add_argument('--jitter_prob', default=0.0, type=float)
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     parser.add_argument('--attr_vis_mode', default='item_specific', type=str)
     parser.add_argument('--disable_mask',
                         action=argparse.BooleanOptionalAction,
-                        default=False)
+                        default=True)
 
     parser.add_argument('--seed', default=0, type=int)
 
