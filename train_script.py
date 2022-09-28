@@ -3,6 +3,7 @@ import os.path
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 
@@ -91,6 +92,9 @@ def main(args):
         entropy_loss_coeff=args.entropy_loss_coeff,
         disable_loggers=args.disable_loggers
     )
+    model_parameters = filter(lambda p: p.requires_grad, clip_idp.parameters())
+    params = sum([np.prod(p.size()) for p in model_parameters])
+    print(params)
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         monitor='val_loss',
@@ -116,9 +120,15 @@ def main(args):
 
     trainer.logger.log_hyperparams(args)
 
+    if args.ckpt_file_name:
+        ckpt_path = Path(__file__).parent / 'checkpoints' / args.ckpt_file_name
+    else:
+        ckpt_path = None
+
     trainer.fit(
         model=clip_idp,
         datamodule=datamodule,
+        ckpt_path=ckpt_path
     )
 
 
@@ -126,7 +136,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument('--dataset', default='mega', type=str)
+    parser.add_argument('--dataset', default='sun397', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -141,11 +151,12 @@ if __name__ == '__main__':
     parser.add_argument('--val_batch_size', default=2, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--entropy_loss_coeff', default=0, type=float)
+    parser.add_argument('--ckpt_file_name', default="", type=str)
 
     # IDP
     parser.add_argument('--idp_length', default=16, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=128, type=int)
+    parser.add_argument('--idp_mixture_size', default=256, type=int)
     parser.add_argument('--idp_act_fn', default='softmax', type=str)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
 
