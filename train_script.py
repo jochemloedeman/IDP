@@ -83,6 +83,7 @@ def main(args):
 
     clip_idp = CLIPIDP(
         clip_architecture=args.architecture,
+        add_linear_classifier=args.add_linear_classifier,
         idp_settings=idp_settings,
         optimizer=args.optimizer,
         init_lr=args.init_lr,
@@ -90,7 +91,7 @@ def main(args):
         warmup_epochs=args.warmup_epochs,
         epochs=args.epochs,
         entropy_loss_coeff=args.entropy_loss_coeff,
-        disable_loggers=args.disable_loggers
+        disable_loggers=args.disable_loggers,
     )
     model_parameters = filter(lambda p: p.requires_grad, clip_idp.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
@@ -154,9 +155,9 @@ if __name__ == '__main__':
     parser.add_argument('--ckpt_file_name', default="", type=str)
 
     # IDP
-    parser.add_argument('--idp_length', default=16, type=int)
+    parser.add_argument('--idp_length', default=8, type=int)
     parser.add_argument('--idp_mode', default='hybrid', type=str)
-    parser.add_argument('--idp_mixture_size', default=256, type=int)
+    parser.add_argument('--idp_mixture_size', default=64, type=int)
     parser.add_argument('--idp_act_fn', default='softmax', type=str)
     parser.add_argument('--hybrid_idp_mode', default='shared', type=str)
 
@@ -179,7 +180,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--warmup_epochs', default=50, type=int)
     parser.add_argument('--strategy', default=None, type=str)
-    parser.add_argument('--num_workers', default=0, type=int)
+    parser.add_argument('--num_workers', default=4, type=int)
     parser.add_argument('--seed', default=0, type=int)
 
     # Switches
@@ -190,6 +191,9 @@ if __name__ == '__main__':
     parser.add_argument('--disable_idp', action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--pretrained_idp', action=argparse.BooleanOptionalAction,
+                        default=False)
+    parser.add_argument('--add_linear_classifier',
+                        action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--disable_loggers',
                         action=argparse.BooleanOptionalAction,

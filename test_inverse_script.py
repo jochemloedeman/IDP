@@ -7,7 +7,7 @@ import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 
 sys.path.append(str(Path(__file__).parent.parent / 'thesislib'))
-from thesislib.models import CLIPIDP
+from thesislib.models import CLIPIDP, VisualIDP
 from thesislib.datamodules.super_datamodule import SuperDataModule
 from thesislib.datamodules import \
     CIFAR100DataModule, DTDDataModule, SUN397DataModule, Food101DataModule, \
@@ -59,14 +59,13 @@ def main(args):
     )
 
     if args.ckpt_file_name:
-        clip_idp = CLIPIDP.load_from_checkpoint(
+        clip_idp = VisualIDP.load_from_checkpoint(
             Path(__file__).parent / 'checkpoints' / args.ckpt_file_name
         )
         print(f"loaded {args.ckpt_file_name}\n")
     else:
         clip_idp = CLIPIDP(
             clip_architecture=args.architecture,
-            add_linear_classifier=args.add_linear_classifier,
             idp_settings=None,
             optimizer=args.optimizer,
             init_lr=args.init_lr,
@@ -95,7 +94,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument('--dataset', default='cifar100', type=str)
+    parser.add_argument('--dataset', default='sun397', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -105,7 +104,7 @@ if __name__ == '__main__':
     parser.add_argument('--solarize_prob', default=0.0, type=float)
 
     # Model + Training
-    parser.add_argument('--ckpt_file_name', default="",
+    parser.add_argument('--ckpt_file_name', default="16x128_sun397.ckpt",
                         type=str)
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
     parser.add_argument('--train_batch_size', default=128, type=int)
@@ -151,9 +150,6 @@ if __name__ == '__main__':
     parser.add_argument('--disable_idp', action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--pretrained_idp',
-                        action=argparse.BooleanOptionalAction,
-                        default=False)
-    parser.add_argument('--add_linear_classifier',
                         action=argparse.BooleanOptionalAction,
                         default=False)
     parser.add_argument('--disable_loggers',
