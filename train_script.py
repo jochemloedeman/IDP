@@ -84,6 +84,7 @@ def main(args):
     clip_idp = CLIPIDP(
         clip_architecture=args.architecture,
         add_linear_classifier=args.add_linear_classifier,
+        nr_classes=datamodule.nr_of_classes,
         idp_settings=idp_settings,
         optimizer=args.optimizer,
         init_lr=args.init_lr,
@@ -137,7 +138,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument('--dataset', default='sun397', type=str)
+    parser.add_argument('--dataset', default='cifar100', type=str)
     parser.add_argument('--data_root',
                         default='/home/jochem/Documents/ai/scriptie/data',
                         type=str)
@@ -148,8 +149,8 @@ if __name__ == '__main__':
 
     # Model + Training
     parser.add_argument('--architecture', default='ViT-B/32', type=str)
-    parser.add_argument('--train_batch_size', default=2, type=int)
-    parser.add_argument('--val_batch_size', default=2, type=int)
+    parser.add_argument('--train_batch_size', default=64, type=int)
+    parser.add_argument('--val_batch_size', default=64, type=int)
     parser.add_argument('--precision', default=32, type=int)
     parser.add_argument('--entropy_loss_coeff', default=0, type=float)
     parser.add_argument('--ckpt_file_name', default="", type=str)
@@ -178,7 +179,7 @@ if __name__ == '__main__':
 
     # Experiment
     parser.add_argument('--epochs', default=100, type=int)
-    parser.add_argument('--warmup_epochs', default=50, type=int)
+    parser.add_argument('--warmup_epochs', default=2, type=int)
     parser.add_argument('--strategy', default=None, type=str)
     parser.add_argument('--num_workers', default=4, type=int)
     parser.add_argument('--seed', default=0, type=int)
@@ -194,7 +195,7 @@ if __name__ == '__main__':
                         default=False)
     parser.add_argument('--add_linear_classifier',
                         action=argparse.BooleanOptionalAction,
-                        default=False)
+                        default=True)
     parser.add_argument('--disable_loggers',
                         action=argparse.BooleanOptionalAction,
                         default=False)
