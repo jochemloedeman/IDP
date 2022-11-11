@@ -110,7 +110,7 @@ def main(args):
         print("loaded 0-shot CLIP \n")
 
     model = clip_idp.input_dependent_prompt
-    model_input = datamodule.test_set[0][0]
+    model_input = datamodule.test_set[0][0].unsqueeze(0)
     flops = FlopCountAnalysis(model, (model_input))
     print(flops.total())
 
