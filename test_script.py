@@ -68,6 +68,23 @@ def main(args):
         solarize_prob=args.solarize_prob,
     )
 
+    idp_settings = {
+        "idp_mode": args.idp_mode,
+        "idp_resolution": args.idp_resolution,
+        "nr_output_vectors": args.idp_length,
+        "vector_dim": visual_embedding_dims[args.architecture],
+        "mixture_size": args.idp_mixture_size,
+        "pretrained_idp": args.pretrained_idp,
+        "hybrid_idp_mode": args.hybrid_idp_mode,
+        "model_type": args.idp_model_type,
+        "proj_type": args.idp_proj_type,
+        "idp_act_fn": args.idp_act_fn,
+        "nr_groups": args.nr_groups,
+        "blocks_per_group": args.blocks_per_group,
+        "initial_channels": args.initial_channels,
+        "init_max_pool": args.init_max_pool,
+    }
+
     if args.ckpt_file_name:
         clip_idp = CLIPIDP.load_from_checkpoint(
             Path(__file__).parent / "checkpoints" / args.ckpt_file_name
@@ -77,7 +94,8 @@ def main(args):
         clip_idp = CLIPIDP(
             clip_architecture=args.architecture,
             add_linear_classifier=args.add_linear_classifier,
-            idp_settings=None,
+            nr_classes=datamodule.nr_of_classes,
+            idp_settings=idp_settings,
             optimizer=args.optimizer,
             init_lr=args.init_lr,
             lr_scheduler=args.lr_scheduler,
