@@ -95,7 +95,7 @@ def main(args):
             clip_architecture=args.architecture,
             add_linear_classifier=args.add_linear_classifier,
             nr_classes=datamodule.nr_of_classes,
-            idp_settings=idp_settings,
+            idp_settings=None,
             optimizer=args.optimizer,
             init_lr=args.init_lr,
             lr_scheduler=args.lr_scheduler,
