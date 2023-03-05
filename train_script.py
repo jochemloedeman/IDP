@@ -1,5 +1,4 @@
 import argparse
-import os.path
 import sys
 from pathlib import Path
 
@@ -7,8 +6,14 @@ import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 
+from thesislib.datamodules.imagenet_a_datamodule import ImageNetADataModule
+from thesislib.datamodules.imagenet_datamodule import ImageNetDataModule
+from thesislib.datamodules.imagenet_r_datamodule import ImageNetRDataModule
+from thesislib.datamodules.imagenet_sketch_datamodule import ImageNetSketchDataModule
+from thesislib.datamodules.imagenet_v2_datamodule import ImageNetV2DataModule
+
 sys.path.append(str(Path(__file__).parent.parent / "thesislib"))
-from thesislib.datamodules.super_datamodule import SuperDataModule
+# from thesislib.datamodules.super_datamodule import SuperDataModule
 from thesislib.models import CLIPIDP
 
 from thesislib.datamodules import (
@@ -24,7 +29,7 @@ from thesislib.datamodules import (
     SVHNDataModule,
     RESISC45DataModule,
     CLEVRCountDataModule,
-    MegaDataModule,
+    # MegaDataModule,
 )
 
 datamodules = {
@@ -40,8 +45,13 @@ datamodules = {
     "svhn": SVHNDataModule,
     "resisc45": RESISC45DataModule,
     "clevr_count": CLEVRCountDataModule,
-    "super": SuperDataModule,
-    "mega": MegaDataModule,
+    "imagenet": ImageNetDataModule,
+    "imagenet_a": ImageNetADataModule,
+    "imagenet_r": ImageNetRDataModule,
+    "imagenet_v2": ImageNetV2DataModule,
+    "imagenet_sketch": ImageNetSketchDataModule,
+    # "super": SuperDataModule,
+    # "mega": MegaDataModule,
 }
 
 visual_embedding_dims = {
@@ -145,27 +155,26 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument("--dataset", default="cifar100", type=str)
+    parser.add_argument("--dataset", default="imagenet", type=str)
     parser.add_argument(
-        "--data_root", default="/home/jochem/Documents/ai/scriptie/data", type=str
+        "--data_root", default="/home/jochem/Documents/data", type=str
     )
     parser.add_argument("--rrc_scale_lb", default=1.0, type=float)
     parser.add_argument("--jitter_prob", default=0.8, type=float)
     parser.add_argument("--greyscale_prob", default=0.2, type=float)
     parser.add_argument("--solarize_prob", default=0.2, type=float)
-
     # Model + Training
     parser.add_argument("--architecture", default="ViT-B/32", type=str)
-    parser.add_argument("--train_batch_size", default=64, type=int)
-    parser.add_argument("--val_batch_size", default=64, type=int)
-    parser.add_argument("--precision", default=32, type=int)
+    parser.add_argument("--train_batch_size", default=4, type=int)
+    parser.add_argument("--val_batch_size", default=4, type=int)
+    parser.add_argument("--precision", default=16, type=int)
     parser.add_argument("--entropy_loss_coeff", default=0, type=float)
     parser.add_argument("--ckpt_file_name", default="", type=str)
 
     # IDP
-    parser.add_argument("--idp_length", default=8, type=int)
+    parser.add_argument("--idp_length", default=16, type=int)
     parser.add_argument("--idp_mode", default="hybrid", type=str)
-    parser.add_argument("--idp_mixture_size", default=64, type=int)
+    parser.add_argument("--idp_mixture_size", default=128, type=int)
     parser.add_argument("--idp_act_fn", default="softmax", type=str)
     parser.add_argument("--hybrid_idp_mode", default="shared", type=str)
 
@@ -189,7 +198,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", default=100, type=int)
     parser.add_argument("--warmup_epochs", default=2, type=int)
     parser.add_argument("--strategy", default=None, type=str)
-    parser.add_argument("--num_workers", default=4, type=int)
+    parser.add_argument("--num_workers", default=0, type=int)
     parser.add_argument("--seed", default=0, type=int)
 
     # Switches
@@ -206,13 +215,13 @@ if __name__ == "__main__":
         "--pretrained_idp", action=argparse.BooleanOptionalAction, default=False
     )
     parser.add_argument(
-        "--add_linear_classifier", action=argparse.BooleanOptionalAction, default=True
+        "--add_linear_classifier", action=argparse.BooleanOptionalAction, default=False
     )
     parser.add_argument(
         "--add_timer", action=argparse.BooleanOptionalAction, default=True
     )
     parser.add_argument(
-        "--disable_loggers", action=argparse.BooleanOptionalAction, default=False
+        "--disable_loggers", action=argparse.BooleanOptionalAction, default=True
     )
 
     args = parser.parse_args()
