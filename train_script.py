@@ -197,7 +197,7 @@ if __name__ == "__main__":
     parser.add_argument("--warmup_epochs", default=2, type=int)
     parser.add_argument("--strategy", default=None, type=str)
     parser.add_argument("--devices", default=-1, type=int)
-    parser.add_argument("--num_workers", default=0, type=int)
+    parser.add_argument("--num_workers", default=4, type=int)
     parser.add_argument("--seed", default=0, type=int)
 
     # Switches
