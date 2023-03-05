@@ -6,14 +6,12 @@ import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 
+sys.path.append(str(Path(__file__).parent.parent / "thesislib"))
 from thesislib.datamodules.imagenet_a_datamodule import ImageNetADataModule
 from thesislib.datamodules.imagenet_datamodule import ImageNetDataModule
 from thesislib.datamodules.imagenet_r_datamodule import ImageNetRDataModule
 from thesislib.datamodules.imagenet_sketch_datamodule import ImageNetSketchDataModule
 from thesislib.datamodules.imagenet_v2_datamodule import ImageNetV2DataModule
-
-sys.path.append(str(Path(__file__).parent.parent / "thesislib"))
-# from thesislib.datamodules.super_datamodule import SuperDataModule
 from thesislib.models import CLIPIDP
 
 from thesislib.datamodules import (
@@ -155,7 +153,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Dataset
-    parser.add_argument("--dataset", default="imagenet", type=str)
+    parser.add_argument("--dataset", default="imagenet_r", type=str)
     parser.add_argument(
         "--data_root", default="/home/jochem/Documents/data", type=str
     )
