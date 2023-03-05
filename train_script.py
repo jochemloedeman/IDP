@@ -129,7 +129,7 @@ def main(args):
 
     trainer = pl.Trainer(
         accelerator="gpu",
-        devices=-1,
+        devices=1,
         callbacks=[checkpoint_callback, lr_monitor],
         max_epochs=args.epochs,
         precision=args.precision,
