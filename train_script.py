@@ -216,7 +216,7 @@ if __name__ == "__main__":
         "--add_linear_classifier", action=argparse.BooleanOptionalAction, default=False
     )
     parser.add_argument(
-        "--add_timer", action=argparse.BooleanOptionalAction, default=True
+        "--add_timer", action=argparse.BooleanOptionalAction, default=False
     )
     parser.add_argument(
         "--disable_loggers", action=argparse.BooleanOptionalAction, default=True
