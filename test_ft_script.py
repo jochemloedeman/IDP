@@ -4,10 +4,13 @@ from pathlib import Path
 
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
-
 sys.path.append(str(Path(__file__).parent.parent / "thesislib"))
+from thesislib.datamodules.imagenet_a_datamodule import ImageNetADataModule
+from thesislib.datamodules.imagenet_r_datamodule import ImageNetRDataModule
+from thesislib.datamodules.imagenet_sketch_datamodule import ImageNetSketchDataModule
+from thesislib.datamodules.imagenet_v2_datamodule import ImageNetV2DataModule
+
 from thesislib.models.finetune_clip import FinetuneClip
-from thesislib.models import CLIPIDP
 from thesislib.datamodules import (
     CIFAR100DataModule,
     DTDDataModule,
@@ -36,6 +39,10 @@ datamodules = {
     "svhn": SVHNDataModule,
     "resisc45": RESISC45DataModule,
     "clevr_count": CLEVRCountDataModule,
+    "imagenet_a": ImageNetADataModule,
+    "imagenet_r": ImageNetRDataModule,
+    "imagenet_v2": ImageNetV2DataModule,
+    "imagenet_sketch": ImageNetSketchDataModule,
 }
 
 visual_embedding_dims = {
