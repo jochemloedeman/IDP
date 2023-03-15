@@ -6,6 +6,7 @@ import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 
 sys.path.append(str(Path(__file__).parent.parent / "thesislib"))
+from thesislib.models.finetune_clip import FinetuneClip
 from thesislib.models import CLIPIDP
 from thesislib.datamodules import (
     CIFAR100DataModule,
@@ -64,24 +65,19 @@ def main(args):
     )
 
     if args.ckpt_file_name:
-        clip_idp = CLIPIDP.load_from_checkpoint(
+        clip_idp = FinetuneClip.load_from_checkpoint(
             Path(__file__).parent / "checkpoints" / args.ckpt_file_name
         )
         print(f"loaded {args.ckpt_file_name}\n")
     else:
-        clip_idp = CLIPIDP(
+        clip_idp = FinetuneClip(
             clip_architecture=args.architecture,
-            add_linear_classifier=args.add_linear_classifier,
             nr_classes=datamodule.nr_of_classes,
-            idp_settings=None,
             optimizer=args.optimizer,
             init_lr=args.init_lr,
             lr_scheduler=args.lr_scheduler,
             warmup_epochs=args.warmup_epochs,
             epochs=args.epochs,
-            entropy_loss_coeff=args.entropy_loss_coeff,
-            disable_loggers=args.disable_loggers,
-            add_timer=args.add_timer,
         )
         print("loaded 0-shot CLIP \n")
 
@@ -104,38 +100,18 @@ if __name__ == "__main__":
     # Dataset
     parser.add_argument("--dataset", default="cifar10", type=str)
     parser.add_argument(
-        "--data_root", default="/home/jochem/Documents/ai/scriptie/data", type=str
+        "--data_root", default="/home/jochem/Documents/data", type=str
     )
-    parser.add_argument("--rrc_scale_lb", default=0.875, type=float)
-    parser.add_argument("--jitter_prob", default=0.0, type=float)
-    parser.add_argument("--greyscale_prob", default=0.0, type=float)
-    parser.add_argument("--solarize_prob", default=0.0, type=float)
-
+    parser.add_argument("--rrc_scale_lb", default=1.0, type=float)
+    parser.add_argument("--jitter_prob", default=0.8, type=float)
+    parser.add_argument("--greyscale_prob", default=0.2, type=float)
+    parser.add_argument("--solarize_prob", default=0.2, type=float)
     # Model + Training
     parser.add_argument("--architecture", default="ViT-B/32", type=str)
-    parser.add_argument("--train_batch_size", default=64, type=int)
-    parser.add_argument("--val_batch_size", default=64, type=int)
+    parser.add_argument("--train_batch_size", default=16, type=int)
+    parser.add_argument("--val_batch_size", default=16, type=int)
     parser.add_argument("--precision", default=16, type=int)
-    parser.add_argument("--entropy_loss_coeff", default=0, type=float)
-    parser.add_argument("--ckpt_file_name", default="", type=str)
-
-    # IDP
-    parser.add_argument("--idp_length", default=2, type=int)
-    parser.add_argument("--idp_mode", default="hybrid", type=str)
-    parser.add_argument("--idp_mixture_size", default=8, type=int)
-    parser.add_argument("--idp_act_fn", default="softmax", type=str)
-    parser.add_argument("--hybrid_idp_mode", default="shared", type=str)
-
-    # IDP Model
-    parser.add_argument("--idp_model_type", default="small", type=str)
-    parser.add_argument("--idp_proj_type", default="linear", type=str)
-    parser.add_argument("--idp_resolution", default=224, type=int)
-    parser.add_argument("--nr_groups", default=4, type=int)
-    parser.add_argument("--blocks_per_group", default=1, type=int)
-    parser.add_argument("--initial_channels", default=16, type=int)
-    parser.add_argument(
-        "--init_max_pool", action=argparse.BooleanOptionalAction, default=True
-    )
+    parser.add_argument("--ckpt_file_name", default="last.ckpt", type=str)
 
     # Optimizer
     parser.add_argument("--optimizer", default="sgd", type=str)
@@ -144,8 +120,9 @@ if __name__ == "__main__":
 
     # Experiment
     parser.add_argument("--epochs", default=100, type=int)
-    parser.add_argument("--warmup_epochs", default=50, type=int)
-    parser.add_argument("--strategy", default=None, type=str)
+    parser.add_argument("--warmup_epochs", default=10, type=int)
+    parser.add_argument("--strategy", default="ddp", type=str)
+    parser.add_argument("--devices", default=-1, type=int)
     parser.add_argument("--num_workers", default=4, type=int)
     parser.add_argument("--seed", default=0, type=int)
 
@@ -157,19 +134,7 @@ if __name__ == "__main__":
         "--profiler", action=argparse.BooleanOptionalAction, default=False
     )
     parser.add_argument(
-        "--disable_idp", action=argparse.BooleanOptionalAction, default=False
-    )
-    parser.add_argument(
-        "--pretrained_idp", action=argparse.BooleanOptionalAction, default=False
-    )
-    parser.add_argument(
-        "--add_linear_classifier", action=argparse.BooleanOptionalAction, default=False
-    )
-    parser.add_argument(
-        "--disable_loggers", action=argparse.BooleanOptionalAction, default=False
-    )
-    parser.add_argument(
-        "--add_timer", action=argparse.BooleanOptionalAction, default=True
+        "--full_finetune", action=argparse.BooleanOptionalAction, default=True
     )
 
     args = parser.parse_args()
