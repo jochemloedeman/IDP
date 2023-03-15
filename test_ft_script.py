@@ -90,7 +90,7 @@ def main(args):
 
     trainer = pl.Trainer(
         accelerator="gpu",
-        devices=-1,
+        devices=1,
         precision=args.precision,
         strategy=args.strategy,
     )
